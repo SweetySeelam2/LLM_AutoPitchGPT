@@ -64,7 +64,7 @@ def generate_pitch_from_data(row):
 
 💸 **Business Model**  
 We operate a B2B/B2C hybrid model with **{employees} employees**.  
-Our valuation is **{valuation:.2f}B dollars**, and our total funding is **${funding:.2f}M** — which highlights investor confidence.  
+Our valuation is **{valuation:.2f}B dollars**, and our total funding is **{funding:.2f}M** dollars — which highlights investor confidence.  
 We are expanding operations and aim to monetize this growth globally.
 
 💰 **Funding Ask**  
