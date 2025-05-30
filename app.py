@@ -1,8 +1,5 @@
-
 import streamlit as st
 import pandas as pd
-import os
-from dotenv import load_dotenv
 
 # -------------------------------
 # ✅ PAGE CONFIG
@@ -14,13 +11,7 @@ st.set_page_config(
 )
 
 st.title("🚀 AutoPitchGPT")
-st.markdown("Create persuasive, LLM-powered investor pitches at scale — instantly.")
-
-# -------------------------------
-# ✅ LOAD ENV + SET API KEY
-# -------------------------------
-load_dotenv()
-openai_api_key = os.getenv("OPENAI_API_KEY")
+st.markdown("Create persuasive, GPT-style investor pitches at scale — instantly.")
 
 # -------------------------------
 # ✅ PITCH GENERATOR FUNCTION
@@ -67,7 +58,7 @@ Currently in the **{funding_stage}** stage, we are seeking strategic investors t
 # -------------------------------
 @st.cache_data
 def load_sample():
-    return pd.read_csv("AutoPitchGPT_with_Pitches.csv")
+    return pd.read_csv("data/AutoPitchGPT_with_Pitches.csv")
 
 sample_df = load_sample()
 sample_startups = sample_df.head(5)['Startup_Name'].tolist()
@@ -100,5 +91,5 @@ elif option == "Upload Your Own CSV":
 # ✅ FOOTER
 # -------------------------------
 st.markdown("---")
-st.markdown("Powered by GPT-4 | No API cost | 100% scalable")
-st.caption("Built by Sweety Seelam  using GPT & Streamlit | © AutoPitchGPT 2025")
+st.markdown("Powered by GPT-Style Logic | No API Cost | 100% Scalable")
+st.caption("Built by Sweety Seelam using Python & Streamlit | © AutoPitchGPT 2025")
