@@ -1,22 +1,22 @@
 import streamlit as st
 import pandas as pd
-import html  # For HTML entity unescaping
+import html  # for HTML entity unescaping
 import subprocess
 
 # -------------------------------
-# 🛠️ HELPER: Fix mojibake (emoji) and HTML escapes
+# 🛠️ HELPER: Fix mojibake (broken emojis) and HTML escapes
 # -------------------------------
 def fix_mojibake(text: str) -> str:
     try:
-        # First unescape any HTML entities
+        # Unescape HTML entities
         txt = html.unescape(text)
-        # Then fix mojibake by re-encoding latin1 -> utf-8
+        # Re-encode Latin-1 to UTF-8 to fix common mojibake
         return txt.encode('latin1', errors='ignore').decode('utf-8', errors='ignore')
     except Exception:
         return text
 
 # -------------------------------
-# ✅ PAGE CONFIG (Must be first Streamlit command)
+# ✅ PAGE CONFIG (must be first Streamlit command)
 # -------------------------------
 st.set_page_config(
     page_title="🚀 AutoPitchGPT – Startup Investor Pitch Generator",
@@ -24,7 +24,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Display current commit for debugging
+# Display current git commit for debugging
 commit = subprocess.getoutput("git rev-parse --short HEAD")
 st.sidebar.markdown(f"**App Version:** `{commit}`")
 
@@ -70,23 +70,30 @@ We are expanding operations and aim to monetize this growth globally.
 💰 **Funding Ask**  
 Currently in the **{funding_stage}** stage, we are seeking strategic investors to join us in our next growth phase. Let's build the future of {industry} — together.
 """
-        # Fix emojis and encoding issues
         return fix_mojibake(pitch.strip())
     except Exception as e:
         return f"Error generating pitch: {e}"
 
 # -------------------------------
-# ✅ SAMPLE DATASET
+# ✅ SAMPLE DATA LOADER
 # -------------------------------
 @st.cache_data
 def load_sample():
-    df = pd.read_csv("data/AutoPitchGPT_with_Pitches.csv", encoding="utf-8")
-    # Decode any mojibake in pre-generated pitches
+    try:
+        # Load from repo root
+        df = pd.read_csv("AutoPitchGPT_with_Pitches.csv", encoding="utf-8")
+    except FileNotFoundError:
+        st.error("⚠️ Sample data not found at repository root: 'AutoPitchGPT_with_Pitches.csv'.")
+        return pd.DataFrame(columns=["Startup_Name", "Generated_Pitch"])
+    except pd.errors.EmptyDataError:
+        st.error("⚠️ Sample data appears empty. Please ensure the CSV has data.")
+        return pd.DataFrame(columns=["Startup_Name", "Generated_Pitch"])
+    # Fix any mojibake in pre-generated pitches
     df["Generated_Pitch"] = df["Generated_Pitch"].apply(fix_mojibake)
     return df
 
 sample_df = load_sample()
-sample_startups = sample_df.head(5)['Startup_Name'].tolist()
+sample_startups = sample_df["Startup_Name"].tolist()
 
 # -------------------------------
 # ✅ INPUT OPTIONS
@@ -95,39 +102,39 @@ st.sidebar.header("🔍 Choose Your Input Method")
 option = st.sidebar.radio("Select one:", ["Use Sample Startup", "Upload Your Own CSV"])
 
 if option == "Use Sample Startup":
-    selected = st.selectbox("Choose a sample startup:", sample_startups)
-    row = sample_df[sample_df["Startup_Name"] == selected].iloc[0]
-    pitch = row["Generated_Pitch"]
-    st.subheader(f"🎯 Investor Pitch for {selected}")
-    st.markdown(pitch)
+    if sample_df.empty:
+        st.info("No sample data available. Please upload your own CSV.")
+    else:
+        selected = st.selectbox("Choose a sample startup:", sample_startups)
+        row = sample_df[sample_df["Startup_Name"] == selected].iloc[0]
+        st.subheader(f"🎯 Investor Pitch for {selected}")
+        st.markdown(row["Generated_Pitch"])
 
 elif option == "Upload Your Own CSV":
     st.markdown("### 🗂️ Upload Instructions")
     st.info("""
-    Please upload a CSV file with the following required columns:
-    - `Startup_Name` (string)
-    - `Founded_Year` (integer)
-    - `Country` (string)
-    - `Industry` (string)
-    - `Funding_Stage` (string)
-    - `Total_Funding_$M` (float)
-    - `Number_of_Employees` (integer)
-    - `Annual_Revenue_$M` (float)
-    - `Valuation_$B` (float)
-    - `Customer_Base_Millions` (float)
-    - `Tech_Stack` (string)
-    - `Social_Media_Followers` (integer)
-    """)
+Please upload a CSV file with these columns:
+- Startup_Name (string)
+- Founded_Year (integer)
+- Country (string)
+- Industry (string)
+- Funding_Stage (string)
+- Total_Funding_$M (float)
+- Number_of_Employees (integer)
+- Annual_Revenue_$M (float)
+- Valuation_$B (float)
+- Customer_Base_Millions (float)
+- Tech_Stack (string)
+- Social_Media_Followers (integer)
+""")
     uploaded_file = st.file_uploader("Upload your startup data CSV", type=["csv"])
     if uploaded_file:
-        user_df = pd.read_csv(uploaded_file, encoding="utf-8")
         with st.spinner("Generating pitches..."):
+            user_df = pd.read_csv(uploaded_file, encoding="utf-8")
             user_df["Generated_Pitch"] = user_df.apply(generate_pitch_from_data, axis=1)
         st.success("✅ Pitches generated successfully!")
         st.dataframe(user_df[["Startup_Name", "Generated_Pitch"]].head(50))
-
-        # Download cleaned UTF-8 CSV
-        csv = user_df.to_csv(index=False, encoding='utf-8')
+        csv = user_df.to_csv(index=False, encoding="utf-8")
         st.download_button("📥 Download Full CSV with Pitches", data=csv, file_name="Generated_Investor_Pitches.csv")
 
 # -------------------------------
