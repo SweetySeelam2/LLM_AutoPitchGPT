@@ -36,7 +36,7 @@ This project uses realistic startup data to create persuasive investor pitches a
 
 ## 🖼️ App Screenshot
 
-![App Screenshot](images/app-screenshot.png)
+![AutoPitchGPT Streamlit App](images/AutoPitchGPT_Streamlit_LiveApp.png)
 
 ---
 
@@ -57,6 +57,7 @@ This project uses realistic startup data to create persuasive investor pitches a
 ├── requirements.txt
 ├── README.md
 └── .gitignore
+└── images/AutoPitchGPT_Streamlit_LiveApp.png
 ```
 
 ---

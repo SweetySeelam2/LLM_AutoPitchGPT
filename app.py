@@ -77,6 +77,22 @@ if option == "Use Sample Startup":
     st.markdown(pitch)
 
 elif option == "Upload Your Own CSV":
+    st.markdown("### 🗂️ Upload Instructions")
+    st.info("""
+    Please upload a CSV file with the following required columns:
+    - `Startup_Name` (string)
+    - `Founded_Year` (integer)
+    - `Country` (string)
+    - `Industry` (string)
+    - `Funding_Stage` (string)
+    - `Total_Funding_$M` (float)
+    - `Number_of_Employees` (integer)
+    - `Annual_Revenue_$M` (float)
+    - `Valuation_$B` (float)
+    - `Customer_Base_Millions` (float)
+    - `Tech_Stack` (string)
+    - `Social_Media_Followers` (integer)
+    """)
     uploaded_file = st.file_uploader("Upload your startup data CSV", type=["csv"])
     if uploaded_file:
         user_df = pd.read_csv(uploaded_file)
