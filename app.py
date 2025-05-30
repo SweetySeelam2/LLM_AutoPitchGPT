@@ -1,10 +1,22 @@
 import streamlit as st
 import pandas as pd
-import html  # For decoding emoji text
+import html  # For HTML entity unescaping
 import subprocess
 
 # -------------------------------
-# ✅ PAGE CONFIG
+# 🛠️ HELPER: Fix mojibake (emoji) and HTML escapes
+# -------------------------------
+def fix_mojibake(text: str) -> str:
+    try:
+        # First unescape any HTML entities
+        txt = html.unescape(text)
+        # Then fix mojibake by re-encoding latin1 -> utf-8
+        return txt.encode('latin1', errors='ignore').decode('utf-8', errors='ignore')
+    except Exception:
+        return text
+
+# -------------------------------
+# ✅ PAGE CONFIG (Must be first Streamlit command)
 # -------------------------------
 st.set_page_config(
     page_title="🚀 AutoPitchGPT – Startup Investor Pitch Generator",
@@ -12,9 +24,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Display current commit for debugging
 commit = subprocess.getoutput("git rev-parse --short HEAD")
 st.sidebar.markdown(f"**App Version:** `{commit}`")
 
+# App header
 st.title("🚀 AutoPitchGPT")
 st.markdown("Create persuasive, GPT-style investor pitches at scale — instantly.")
 
@@ -56,7 +70,8 @@ We are expanding operations and aim to monetize this growth globally.
 💰 **Funding Ask**  
 Currently in the **{funding_stage}** stage, we are seeking strategic investors to join us in our next growth phase. Let's build the future of {industry} — together.
 """
-        return pitch.strip()
+        # Fix emojis and encoding issues
+        return fix_mojibake(pitch.strip())
     except Exception as e:
         return f"Error generating pitch: {e}"
 
@@ -65,7 +80,10 @@ Currently in the **{funding_stage}** stage, we are seeking strategic investors t
 # -------------------------------
 @st.cache_data
 def load_sample():
-    return pd.read_csv("data/AutoPitchGPT_with_Pitches.csv")
+    df = pd.read_csv("data/AutoPitchGPT_with_Pitches.csv", encoding="utf-8")
+    # Decode any mojibake in pre-generated pitches
+    df["Generated_Pitch"] = df["Generated_Pitch"].apply(fix_mojibake)
+    return df
 
 sample_df = load_sample()
 sample_startups = sample_df.head(5)['Startup_Name'].tolist()
@@ -81,7 +99,7 @@ if option == "Use Sample Startup":
     row = sample_df[sample_df["Startup_Name"] == selected].iloc[0]
     pitch = row["Generated_Pitch"]
     st.subheader(f"🎯 Investor Pitch for {selected}")
-    st.markdown(html.unescape(pitch))
+    st.markdown(pitch)
 
 elif option == "Upload Your Own CSV":
     st.markdown("### 🗂️ Upload Instructions")
@@ -102,14 +120,13 @@ elif option == "Upload Your Own CSV":
     """)
     uploaded_file = st.file_uploader("Upload your startup data CSV", type=["csv"])
     if uploaded_file:
-        user_df = pd.read_csv(uploaded_file)
+        user_df = pd.read_csv(uploaded_file, encoding="utf-8")
         with st.spinner("Generating pitches..."):
             user_df["Generated_Pitch"] = user_df.apply(generate_pitch_from_data, axis=1)
-            user_df["Generated_Pitch"] = user_df["Generated_Pitch"].apply(html.unescape)
-
         st.success("✅ Pitches generated successfully!")
         st.dataframe(user_df[["Startup_Name", "Generated_Pitch"]].head(50))
 
+        # Download cleaned UTF-8 CSV
         csv = user_df.to_csv(index=False, encoding='utf-8')
         st.download_button("📥 Download Full CSV with Pitches", data=csv, file_name="Generated_Investor_Pitches.csv")
 
