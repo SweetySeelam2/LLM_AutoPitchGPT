@@ -57,14 +57,14 @@ def generate_pitch_from_data(row):
 {industry} is facing major scalability and customer personalization issues in global markets like {country}. Traditional models are failing to address high-volume demand with precision.
 
 💡 **Solution**  
-{name}, founded in {founded}, offers a cutting-edge, scalable solution powered by technologies like {tech_stack}. We serve over {customer_base} million users with annual revenues of {revenue}M dollars.
+{name}, founded in {founded}, offers a cutting-edge, scalable solution powered by technologies like {tech_stack}. We serve over {customer_base} million users with annual revenues of {revenue} million dollars.
 
 🌍 **Market Opportunity**  
 {name} operates in the high-growth {industry} sector, with global demand projected to grow rapidly. With {followers:,} followers and presence in {country}, we’re poised for market dominance.
 
 💸 **Business Model**  
 We operate a B2B/B2C hybrid model with **{employees} employees**.  
-Our valuation is **{valuation:.2f}B dollars**, and our total funding is **{funding:.2f}M** dollars — which highlights investor confidence.  
+Our valuation is **{valuation:.2f} billion dollars**, and our total funding is **{funding:.2f} million dollars** — which highlights investor confidence.  
 We are expanding operations and aim to monetize this growth globally.
 
 💰 **Funding Ask**  
@@ -79,16 +79,8 @@ Currently in the **{funding_stage}** stage, we are seeking strategic investors t
 # -------------------------------
 @st.cache_data
 def load_sample():
-    try:
-        # Load from repo root
-        df = pd.read_csv("AutoPitchGPT_with_Pitches.csv", encoding="utf-8")
-    except FileNotFoundError:
-        st.error("⚠️ Sample data not found at repository root: 'AutoPitchGPT_with_Pitches.csv'.")
-        return pd.DataFrame(columns=["Startup_Name", "Generated_Pitch"])
-    except pd.errors.EmptyDataError:
-        st.error("⚠️ Sample data appears empty. Please ensure the CSV has data.")
-        return pd.DataFrame(columns=["Startup_Name", "Generated_Pitch"])
-    # Fix any mojibake in pre-generated pitches
+    df = pd.read_csv("AutoPitchGPT_with_Pitches.csv", encoding="utf-8-sig")
+    # fix any broken emojis in the *already* generated pitches
     df["Generated_Pitch"] = df["Generated_Pitch"].apply(fix_mojibake)
     return df
 
@@ -134,7 +126,7 @@ Please upload a CSV file with these columns:
             user_df["Generated_Pitch"] = user_df.apply(generate_pitch_from_data, axis=1)
         st.success("✅ Pitches generated successfully!")
         st.dataframe(user_df[["Startup_Name", "Generated_Pitch"]].head(50))
-        csv = user_df.to_csv(index=False, encoding="utf-8")
+        csv = user_df.to_csv(index=False, encoding="utf-8-sig")
         st.download_button("📥 Download Full CSV with Pitches", data=csv, file_name="Generated_Investor_Pitches.csv")
 
 # -------------------------------
