@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import html
 
 # -------------------------------
 # ✅ PAGE CONFIG
@@ -74,7 +75,7 @@ if option == "Use Sample Startup":
     row = sample_df[sample_df["Startup_Name"] == selected].iloc[0]
     pitch = row["Generated_Pitch"]
     st.subheader(f"🎯 Investor Pitch for {selected}")
-    st.markdown(pitch)
+    st.markdown(html.unescape(pitch))
 
 elif option == "Upload Your Own CSV":
     st.markdown("### 🗂️ Upload Instructions")
@@ -99,7 +100,9 @@ elif option == "Upload Your Own CSV":
         with st.spinner("Generating pitches..."):
             user_df["Generated_Pitch"] = user_df.apply(generate_pitch_from_data, axis=1)
         st.success("✅ Pitches generated successfully!")
-        st.write(user_df[["Startup_Name", "Generated_Pitch"]])
+        for _, row in user_df.iterrows():
+            st.subheader(f"🎯 Investor Pitch for {row['Startup_Name']}")
+            st.markdown(html.unescape(row["Generated_Pitch"]))
         csv = user_df.to_csv(index=False).encode('utf-8')
         st.download_button("📥 Download Full CSV with Pitches", data=csv, file_name="Generated_Investor_Pitches.csv")
 
