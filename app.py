@@ -3,9 +3,6 @@ import pandas as pd
 import html  # For decoding emoji text
 import subprocess
 
-commit = subprocess.getoutput("git rev-parse --short HEAD")
-st.sidebar.markdown(f"**App Version:** `{commit}`")
-
 # -------------------------------
 # ✅ PAGE CONFIG
 # -------------------------------
@@ -14,6 +11,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+commit = subprocess.getoutput("git rev-parse --short HEAD")
+st.sidebar.markdown(f"**App Version:** `{commit}`")
 
 st.title("🚀 AutoPitchGPT")
 st.markdown("Create persuasive, GPT-style investor pitches at scale — instantly.")
