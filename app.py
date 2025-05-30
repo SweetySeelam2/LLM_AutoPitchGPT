@@ -57,14 +57,14 @@ def generate_pitch_from_data(row):
 {industry} is facing major scalability and customer personalization issues in global markets like {country}. Traditional models are failing to address high-volume demand with precision.
 
 💡 **Solution**  
-{name}, founded in {founded}, offers a cutting-edge, scalable solution powered by technologies like {tech_stack}. We serve over {customer_base} million users with annual revenues of ${revenue}M.
+{name}, founded in {founded}, offers a cutting-edge, scalable solution powered by technologies like {tech_stack}. We serve over {customer_base} million users with annual revenues of {revenue}M dollars.
 
 🌍 **Market Opportunity**  
 {name} operates in the high-growth {industry} sector, with global demand projected to grow rapidly. With {followers:,} followers and presence in {country}, we’re poised for market dominance.
 
 💸 **Business Model**  
 We operate a B2B/B2C hybrid model with **{employees} employees**.  
-Our valuation is **${valuation:.2f}B**, and our total funding is **${funding:.2f}M** — which highlights investor confidence.  
+Our valuation is **{valuation:.2f}B dollars**, and our total funding is **${funding:.2f}M** — which highlights investor confidence.  
 We are expanding operations and aim to monetize this growth globally.
 
 💰 **Funding Ask**  
