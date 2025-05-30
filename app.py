@@ -45,7 +45,7 @@ def generate_pitch_from_data(row):
 {name} operates in the high-growth {industry} sector, with global demand projected to grow rapidly. With {followers:,} followers and presence in {country}, we’re poised for market dominance.
 
 💸 **Business Model**  
-We operate a B2B/B2C hybrid model with {employees} employees. Our valuation of $${valuation}B and total funding of {funding}M dollars highlights market confidence. Our next step: expand and monetize globally.
+We operate a B2B/B2C hybrid model with {employees} employees. Our valuation of {valuation}B dollars and total funding of {funding}M dollars highlights market confidence. Our next step: expand and monetize globally.
 
 💰 **Funding Ask**  
 Currently in the **{funding_stage}** stage, we are seeking strategic investors to join us in our next growth phase. Let's build the future of {industry} — together.
@@ -99,10 +99,11 @@ elif option == "Upload Your Own CSV":
         user_df = pd.read_csv(uploaded_file)
         with st.spinner("Generating pitches..."):
             user_df["Generated_Pitch"] = user_df.apply(generate_pitch_from_data, axis=1)
+            # decode emojis to fix broken characters
+            user_df["Generated_Pitch"] = user_df["Generated_Pitch"].apply(html.unescape)
         st.success("✅ Pitches generated successfully!")
-        for _, row in user_df.iterrows():
-            st.subheader(f"🎯 Investor Pitch for {row['Startup_Name']}")
-            st.markdown(html.unescape(row["Generated_Pitch"]))
+        st.dataframe(user_df[["Startup_Name", "Generated_Pitch"]].head(50))  # preview only
+
         csv = user_df.to_csv(index=False).encode('utf-8')
         st.download_button("📥 Download Full CSV with Pitches", data=csv, file_name="Generated_Investor_Pitches.csv")
 
