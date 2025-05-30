@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
 import html  # For decoding emoji text
+import subprocess
+
+commit = subprocess.getoutput("git rev-parse --short HEAD")
+st.sidebar.markdown(f"**App Version:** `{commit}`")
 
 # -------------------------------
 # ✅ PAGE CONFIG
