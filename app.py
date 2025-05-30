@@ -33,22 +33,24 @@ def generate_pitch_from_data(row):
         followers = row['Social_Media_Followers']
 
         pitch = f"""
-**Investor Pitch for {name} ({industry})**
+🚀 **Investor Pitch for {name} ({industry})**
 
-**Problem**  
+📌 **Problem**  
 {industry} is facing major scalability and customer personalization issues in global markets like {country}. Traditional models are failing to address high-volume demand with precision.
 
-**Solution**  
-{name}, founded in {founded}, offers a cutting-edge, scalable solution powered by technologies like {tech_stack}. We serve over {customer_base} million users with annual revenues of {revenue}M dollars.
+💡 **Solution**  
+{name}, founded in {founded}, offers a cutting-edge, scalable solution powered by technologies like {tech_stack}. We serve over {customer_base} million users with annual revenues of ${revenue}M.
 
-**Market Opportunity**  
+🌍 **Market Opportunity**  
 {name} operates in the high-growth {industry} sector, with global demand projected to grow rapidly. With {followers:,} followers and presence in {country}, we’re poised for market dominance.
 
-**Business Model**  
-We operate a B2B/B2C hybrid model with {employees} employees. Our valuation of {valuation}B dollars  and total funding  of {funding}M dollars highlights market confidence. Our next step: expand and monetize globally.
+💸 **Business Model**  
+We operate a B2B/B2C hybrid model with {employees} employees.  
+Our valuation of **${valuation}B**&nbsp;and total funding of **${funding}M**&nbsp;highlights market confidence.  
+Our next step: expand and monetize globally.
 
-**Funding Ask**  
-Currently in the **{funding_stage}** stage, we are seeking strategic investors to join us in our next growth phase. Let's build the future of {industry}, together.
+💰 **Funding Ask**  
+Currently in the **{funding_stage}** stage, we are seeking strategic investors to join us in our next growth phase. Let's build the future of {industry} — together.
 """
         return pitch.strip()
     except Exception as e:
